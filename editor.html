@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .editor-section {
+            border: 1px solid var(--text-color);
+            padding: 1rem;
+            background: var(--bg-color);
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            background: var(--bg-color);
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            padding: 1rem;
+            resize: vertical;
+        }
+
+        .preview {
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .formatting-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid var(--text-color);
+            background: var(--bg-color);
+        }
+
+        .format-btn {
+            background: var(--bg-color);
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 0.3rem 0.6rem;
+            cursor: pointer;
+            font-family: var(--font-family);
+        }
+
+        .format-btn:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        select {
+            background: var(--bg-color);
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            padding: 0.5rem;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .image-upload {
+            border: 1px solid var(--text-color);
+            padding: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .uploaded-image {
+            border: 1px solid var(--text-color);
+            padding: 0.5rem;
+        }
+
+        .uploaded-image button {
+            background: var(--bg-color);
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+        }
+
+        .copy-button {
+            background: var(--bg-color);
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: var(--font-family);
+            margin-top: 1rem;
+        }
+
+        .copy-button:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        /* Remove gradients and animations */
+        * {
+            transition: none !important;
+            animation: none !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+<body>
+    <h1 data-text="Blog Post Editor"></h1>
+    <div class="editor-container">
+        <div class="editor-section">
+            <label for="title">Title:</label>
+            <input type="text" id="title" placeholder="Post title">
+            <label for="type">Type:</label>
+            <select id="type" style="margin-bottom: 1rem;">
+                <option value="entries">Entry</option>
+                <option value="inspiration">Inspiration</option>
+            </select>
+            <div class="image-upload" id="dropZone">
+                <input type="file" accept="image/*" multiple id="imageInput">
+                <p>Drop images here or click to upload</p>
+            </div>
+            <div class="uploaded-images" id="uploadedImages"></div>
+            <label for="markdown">Content:</label>
+            <div class="formatting-toolbar">
+                <div class="format-group">
+                    <button class="format-btn" data-format="h1" title="Title"># H1</button>
+                    <button class="format-btn" data-format="h2" title="Subtitle">## H2</button>
+                    <button class="format-btn" data-format="h3" title="Small title">### H3</button>
+                </div>
+                <div class="format-group">
+                    <button class="format-btn" data-format="bold" title="Bold">**B**</button>
+                    <button class="format-btn" data-format="italic" title="Italic">*I*</button>
+                    <button class="format-btn" data-format="strike" title="Strikethrough">~~S~~</button>
+                </div>
+                <div class="format-group">
+                    <button class="format-btn" data-format="quote" title="Quote">> Quote</button>
+                    <button class="format-btn" data-format="code" title="Code">`Code`</button>
+                    <button class="format-btn" data-format="codeblock" title="Code Block">```</button>
+                </div>
+                <div class="format-group">
+                    <button class="format-btn" data-format="ul" title="Bullet List">• List</button>
+                    <button class="format-btn" data-format="ol" title="Numbered List">1. List</button>
+                    <button class="format-btn" data-format="task" title="Task List">☐ Task</button>
+                </div>
+                <div class="format-group"></div>
+                    <button class="format-btn" data-format="link" title="Link">Link</button>
+                    <button class="format-btn" data-format="image-url" title="Image from URL">Image URL</button>
+                </div>
+            </div>
+            <textarea id="markdown" placeholder="Write your markdown here..."></textarea>
+        </div>
+        <div class="editor-section">
+            <label>Preview:</label>
+            <div class="markdown-content preview"></div>
+        </div>
+    </div>
+    <div class="editor-section json-output">
+        <label>JSON Output:</label>
+        <pre><code id="json"></code></pre>
+        <button class="copy-button" onclick="copyJson()">Copy JSON</button>
+    </div>
+
+    <script>
+        const markdownInput = document.getElementById('markdown');
+        const preview = document.querySelector('.preview');
+        const jsonOutput = document.getElementById('json');
+        const titleInput = document.getElementById('title');
+        const typeSelect = document.getElementById('type');
+
+        function updatePreview() {
+            const markdown = markdownInput.value;
+            preview.innerHTML = marked.parse(markdown);
+            updateJson();
+        }
+
+        function updateJson() {
+            const post = {
+                title: titleInput.value || "Untitled",
+                type: typeSelect.value,
+                content: [{
+                    type: "markdown",
+                    value: markdownInput.value
+                }]
+            };
+            
+            if (typeSelect.value === 'entries') {
+                post.date = new Date().toISOString().split('T')[0];
+            }
+
+            jsonOutput.textContent = JSON.stringify(post, null, 2);
+        }
+
+        function copyJson() {
+            navigator.clipboard.writeText(jsonOutput.textContent);
+            const btn = document.querySelector('.copy-button');
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy JSON', 2000);
+        }
+
+        markdownInput.addEventListener('input', updatePreview);
+        titleInput.addEventListener('input', updateJson);
+        typeSelect.addEventListener('change', updateJson);
+
+        // Image handling
+        const dropZone = document.getElementById('dropZone');
+        const imageInput = document.getElementById('imageInput');
+        const uploadedImages = document.getElementById('uploadedImages');
+        let uploadedFiles = [];
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    uploadedFiles.push({
+                        name: file.name,
+                        url: imageUrl
+                    });
+                    updateUploadedImages();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateUploadedImages() {
+            uploadedImages.innerHTML = uploadedFiles.map((file, index) => `
+                <div class="uploaded-image">
+                    <img src="${file.url}" alt="${file.name}">
+                    <button onclick="insertImage(${index})">Insert</button>
+                    <button onclick="removeImage(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        function insertImage(index) {
+            const file = uploadedFiles[index];
+            const markdown = `![${file.name}](${file.url})\n\n`;
+            const textarea = document.getElementById('markdown');
+            const pos = textarea.selectionStart;
+            textarea.value = textarea.value.slice(0, pos) + markdown + textarea.value.slice(pos);
+            updatePreview();
+        }
+
+        function removeImage(index) {
+            uploadedFiles.splice(index, 1);
+            updateUploadedImages();
+        }
+
+        // Drag and drop handling
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function applyFormatting(format) {
+            const textarea = document.getElementById('markdown');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const selectedText = text.substring(start, end);
+            let formattedText;
+
+            switch(format) {
+                case 'h1':
+                    formattedText = `# ${selectedText}\n\n`;
+                    break;
+                case 'h2':
+                    formattedText = `## ${selectedText}\n\n`;
+                    break;
+                case 'h3':
+                    formattedText = `### ${selectedText}\n\n`;
+                    break;
+                case 'bold':
+                    formattedText = `**${selectedText}**`;
+                    break;
+                case 'italic':
+                    formattedText = `*${selectedText}*`;
+                    break;
+                case 'strike':
+                    formattedText = `~~${selectedText}~~`;
+                    break;
+                case 'quote':
+                    formattedText = `> ${selectedText.split('\n').join('\n> ')}\n\n`;
+                    break;
+                case 'code':
+                    formattedText = `\`${selectedText}\``;
+                    break;
+                case 'codeblock':
+                    formattedText = `\`\`\`\n${selectedText}\n\`\`\`\n\n`;
+                    break;
+                case 'ul':
+                    formattedText = selectedText.split('\n')
+                        .map(line => `- ${line}`)
+                        .join('\n') + '\n\n';
+                    break;
+                case 'ol':
+                    formattedText = selectedText.split('\n')
+                        .map((line, i) => `${i + 1}. ${line}`)
+                        .join('\n') + '\n\n';
+                    break;
+                case 'task':
+                    formattedText = selectedText.split('\n')
+                        .map(line => `- [ ] ${line}`)
+                        .join('\n') + '\n\n';
+                    break;
+                case 'link':
+                    const url = prompt('Enter URL:');
+                    if (url) formattedText = `[${selectedText}](${url})`;
+                    break;
+                case 'image-url':
+                    insertImageFromUrl();
+                    return;
+            }
+
+            if (formattedText) {
+                textarea.value = text.substring(0, start) + formattedText + text.substring(end);
+                updatePreview();
+                textarea.focus();
+                const newCursorPos = start + formattedText.length;
+                textarea.setSelectionRange(newCursorPos, newCursorPos);
+            }
+        }
+
+        function insertImageUrlToMarkdown() {
+            const url = document.getElementById('imageUrl').value;
+            const alt = document.getElementById('imageAlt').value || 'image';
+            if (url) {
+                const markdown = `![${alt}](${url})\n\n`;
+                const textarea = document.getElementById('markdown');
+                const pos = textarea.selectionStart;
+                textarea.value = textarea.value.slice(0, pos) + markdown + textarea.value.slice(pos);
+                updatePreview();
+            }
+            document.querySelector('.image-url-dialog').remove();
+        }
+
+        // Add click handlers for formatting buttons
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                applyFormatting(btn.dataset.format);
+            });
+        });
+
+        // Initial preview
+        updatePreview();
+    </script>
+</body>
+</html>

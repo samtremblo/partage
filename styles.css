@@ -1,0 +1,214 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --link-color: #0000ff;
+    --font-family: 'Courier New', monospace;
+    --line-height: 1.5;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: var(--line-height);
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h1 {
+    border-bottom: 1px solid var(--text-color);
+    padding-bottom: 10px;
+}
+
+h1::before {
+    content: none;
+}
+
+menu {
+    padding: 0;
+    margin: 20px 0;
+    border-bottom: 1px solid var(--text-color);
+    padding-bottom: 10px;
+}
+
+menu li {
+    display: inline;
+    margin-right: 20px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+menu li::before,
+menu li::after {
+    content: none;
+}
+
+menu li.active {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.post {
+    aspect-ratio: 1;
+    margin-bottom: 0;
+    padding: 1rem;
+    border: 2px solid var(--text-color);
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.post::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2rem;
+    background: linear-gradient(transparent, #fff);
+    pointer-events: none;
+}
+
+.post h3 {
+    font-size: 1em;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--text-color);
+}
+
+.post time {
+    font-size: 0.8em;
+    margin: 0.5rem 0;
+    display: block;
+}
+
+.post .preview-text {
+    font-size: 0.9em;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+}
+
+.post .preview-text strong {
+    font-weight: bold;
+}
+
+.post .preview-text em {
+    font-style: italic;
+}
+
+.post .preview-text a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.post .preview-text a:hover {
+    text-decoration: underline;
+}
+
+.post:hover {
+    outline: 2px solid var(--link-color);
+}
+
+.post.inspiration {
+    border-style: double;
+    background: #f8f8f8;
+}
+
+.post.inspiration::before {
+    content: "★";
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: var(--link-color);
+}
+
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-color);
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.fullscreen-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    border: none;
+}
+
+.close-button {
+    background: var(--bg-color);
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-family: var(--font-family);
+    text-transform: uppercase;
+    font-size: 0.8em;
+}
+
+.markdown-content {
+    line-height: var(--line-height);
+}
+
+.markdown-content p {
+    margin: 1rem 0;
+}
+
+.markdown-content p::before {
+    content: none;
+}
+
+.markdown-content a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.markdown-content a:hover {
+    text-decoration: underline;
+}
+
+.markdown-content a:visited {
+    color: purple;
+}
+
+.markdown-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1rem 0;
+}
+
+.markdown-content pre,
+.markdown-content code {
+    background: #f5f5f5;
+    padding: 0.2rem;
+    border: 1px solid #ddd;
+    color: var(--text-color);
+}
+
+/* Remove all animations and transitions */
+* {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}

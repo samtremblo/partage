@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="blog, personal, thoughts, web1.0, minimalist">
+    <title>~/blog</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // Configure marked globally
+        marked.setOptions({
+            breaks: true,
+            gfm: true
+        });
+    </script>
+</head>
+<body>
+    <h1 data-text="Parce que partager, ça fait du bien"></h1>
+    <menu>
+        <li class="active">all</li>
+        <li>entries</li>
+        <li>inspiration</li>
+    </menu>
+    <div id="content-grid"></div>
+    <script src="app.js"></script>
+</body>
+</html>
