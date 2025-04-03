@@ -2,7 +2,7 @@
     "posts": [
         {
             "title": "Pensées sur la technologie simple",
-            "type": "inspiration",
+            "type": "inspirations",
             "content": [
               {
                 "type": "markdown",
@@ -12,7 +12,7 @@
           },
           {
             "title": "Le design est mort – vive le design",
-            "type": "inspiration",
+            "type": "inspirations",
             "content": [
               {
                 "type": "markdown",
@@ -22,7 +22,7 @@
           },
           {
             "title": "Le Technologue Créatif",
-            "type": "inspiration",
+            "type": "inspirations",
             "content": [
               {
                 "type": "markdown",
@@ -32,7 +32,7 @@
           },
           {
             "title": "Kessé ça",
-            "type": "entries",
+            "type": "p'tite pensées",
             "content": [
               {
                 "type": "markdown",

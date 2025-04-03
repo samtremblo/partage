@@ -122,12 +122,12 @@ menu li.active {
     outline: 2px solid var(--link-color);
 }
 
-.post.inspiration {
+.post.inspirations {
     border-style: double;
     background: #f8f8f8;
 }
 
-.post.inspiration::before {
+.post.inspirations::before {
     content: "★";
     position: absolute;
     top: 0.5rem;
