@@ -6,6 +6,7 @@
     <title>Blog Editor</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         .editor-container {
             display: grid;
@@ -119,6 +120,26 @@
             animation: none !important;
             box-shadow: none !important;
         }
+
+        .encrypt-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .encrypt-toggle input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .password-input {
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        .password-input.visible {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -127,6 +148,15 @@
         <div class="editor-section">
             <label for="title">Title:</label>
             <input type="text" id="title" placeholder="Post title">
+            
+            <div class="encrypt-toggle">
+                <input type="checkbox" id="encrypt" />
+                <label for="encrypt">Encrypt content</label>
+                <div class="password-input" id="passwordInput">
+                    <input type="password" id="password" placeholder="Enter encryption password" />
+                </div>
+            </div>
+
             <label for="type">Type:</label>
             <select id="type" style="margin-bottom: 1rem;">
                 <option value="entries">Entry</option>
@@ -191,20 +221,34 @@
         }
 
         function updateJson() {
+            const isEncrypted = document.getElementById('encrypt').checked;
+            const password = document.getElementById('password').value;
+            let content = [{
+                type: "markdown",
+                value: markdownInput.value
+            }];
+
             const post = {
                 title: titleInput.value || "Untitled",
                 type: typeSelect.value,
-                content: [{
-                    type: "markdown",
-                    value: markdownInput.value
-                }]
+                content: content
             };
             
             if (typeSelect.value === 'entries') {
                 post.date = new Date().toISOString().split('T')[0];
             }
 
-            jsonOutput.textContent = JSON.stringify(post, null, 2);
+            let outputJson = JSON.stringify(post, null, 2);
+            
+            if (isEncrypted && password) {
+                outputJson = {
+                    encrypted: true,
+                    value: CryptoJS.AES.encrypt(outputJson, password).toString()
+                };
+                outputJson = JSON.stringify(outputJson, null, 2);
+            }
+
+            jsonOutput.textContent = outputJson;
         }
 
         function copyJson() {
@@ -217,6 +261,14 @@
         markdownInput.addEventListener('input', updatePreview);
         titleInput.addEventListener('input', updateJson);
         typeSelect.addEventListener('change', updateJson);
+
+        document.getElementById('encrypt').addEventListener('change', (e) => {
+            const passwordInput = document.getElementById('passwordInput');
+            passwordInput.classList.toggle('visible', e.target.checked);
+        });
+
+        document.getElementById('password').addEventListener('input', updateJson);
+        document.getElementById('encrypt').addEventListener('change', updateJson);
 
         // Image handling
         const dropZone = document.getElementById('dropZone');

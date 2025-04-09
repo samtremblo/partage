@@ -29,12 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadPost(post) {
-        // Preload all images in the post
-        const imagePromises = post.content
-            .filter(item => item.type === 'image')
-            .map(item => preloadImage(item.value));
-        
-        await Promise.all(imagePromises);
+        // Preload all images in the post if content exists
+        if (post.content && Array.isArray(post.content)) {
+            const imagePromises = post.content
+                .filter(item => item.type === 'image')
+                .map(item => preloadImage(item.value));
+            
+            await Promise.all(imagePromises);
+        }
         return createPostElement(post);
     }
 
@@ -89,6 +91,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handlePostClick(post) {
         return () => {
+            const isEncrypted = post.encrypted && post.value;
+            
+            if (isEncrypted) {
+                const password = prompt('This content is encrypted. Please enter the password:');
+                if (!password) return;
+                
+                // Try to decrypt the content
+                try {
+                    const decryptedData = CryptoJS.AES.decrypt(post.value, password).toString(CryptoJS.enc.Utf8);
+                    const decryptedPost = JSON.parse(decryptedData);
+                    // Validate decrypted post structure
+                    if (!decryptedPost || !Array.isArray(decryptedPost.content)) {
+                        throw new Error('Invalid post structure');
+                    }
+                    post = decryptedPost;
+                } catch (e) {
+                    alert('Incorrect password or corrupted data');
+                    return;
+                }
+            }
+
             const overlay = document.createElement('div');
             overlay.className = 'fullscreen-overlay';
             
@@ -99,14 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 headerIds: false
             });
             
-            let contentHTML = post.content.map(item => {
-                if (item.type === 'markdown') {
-                    const parsed = marked.parse(item.value)
-                        .replace(/\n/g, '<br>');
-                    return `<div class="markdown-content">${parsed}</div>`;
-                }
-                return '';
-            }).join('');
+            let contentHTML = '';
+            if (post.content && Array.isArray(post.content)) {
+                contentHTML = post.content.map(item => {
+                    if (item.type === 'markdown') {
+                        const parsed = marked.parse(item.value)
+                            .replace(/\n/g, '<br>');
+                        return `<div class="markdown-content">${parsed}</div>`;
+                    }
+                    return '';
+                }).join('');
+            }
 
             const content = `
                 <div class="fullscreen-content">
@@ -140,13 +166,54 @@ document.addEventListener('DOMContentLoaded', () => {
         const element = document.createElement('article');
         element.className = `post ${post.type}`;
         
+        // Check if the post itself is encrypted
+        const isEncrypted = post.encrypted && post.value;
+        let content;
+
+        if (isEncrypted) {
+            content = `
+                <h3>[Encrypted Post]</h3>
+                    <p class="encrypted-value" style="word-break: break-all;">${post.value}</p>
+                    <button class="decrypt-btn">Decrypt</button>
+                </div>
+            `;
+            element.innerHTML = content;
+
+            // Add decrypt button handler
+            const decryptBtn = element.querySelector('.decrypt-btn');
+            decryptBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent post click event
+                const password = prompt('Enter decryption password:');
+                if (password) {
+                    try {
+                        const decryptedData = CryptoJS.AES.decrypt(post.value, password).toString(CryptoJS.enc.Utf8);
+                        const decryptedPost = JSON.parse(decryptedData);
+                        // Update the post content with decrypted data
+                        element.innerHTML = createPostContent(decryptedPost);
+                        // Update the original data for the click handler
+                        post = decryptedPost;
+                    } catch (err) {
+                        alert('Invalid password or corrupted data');
+                    }
+                }
+            });
+            return element;
+        }
+
+        element.innerHTML = createPostContent(post);
+        return element;
+    }
+
+    function createPostContent(post) {
         const firstContent = post.content.find(item => 
             item.type === 'markdown' || item.type === 'text'
         );
         
         let previewText = '';
         if (firstContent) {
-            if (firstContent.type === 'markdown') {
+            if (firstContent.encrypted) {
+                previewText = '<div class="encrypted-box">[Encrypted content]<button class="decrypt-btn">Decrypt</button></div>';
+            } else if (firstContent.type === 'markdown') {
                 // Get first paragraph and preserve some formatting
                 const cleanText = firstContent.value
                     .split('\n\n')[0]  // Get first paragraph
@@ -165,13 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        let content = `
+        return `
             <h3>${post.title}</h3>
             ${post.date ? `<time>${post.date}</time>` : ''}
             <div class="preview-text">${previewText}</div>
         `;
-
-        element.innerHTML = content;
-        return element;
     }
 });

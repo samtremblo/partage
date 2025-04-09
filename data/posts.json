@@ -31,15 +31,8 @@
             ]
           },
           {
-            "title": "Kessé ça",
-            "type": "p'tite pensées",
-            "content": [
-              {
-                "type": "markdown",
-                "value": "Ça fait genre 3 fois que j'essaye de me garder un journal qui garde une trace de mes pensées et de mes inspirations. J'messaye icitte, what could possibly go wrong...\n"
-              }
-            ],
-            "date": "2025-04-03"
+            "encrypted": true,
+            "value": "U2FsdGVkX18lmEbu0ksEI/wU8wOlI/goorl6vdUN3HTwV9XTQpyRCcym+aDSheF6KerutAf46+3EJ9ZgKYbA5dDE8XoXXvK7m39BOXTD+rd/V5eQPTyPhXq45zwbkytz5wzcsPF4gmWr0suV294tI6XajJ//FS7CUChzqx+KO4YZc5t2NP0z2Zr5LtG28ms9gImj3vGAjqf0T25mXqf2c8iOLfYrK0s32KYM8Gw/91Hy50WqeT0Fo/ctmutr0Ia6hylDlKtvU/IrpyXtTRmTsCetHc091TNiYXDC1pKlPu+okQ5HZifC68bD1VG4/dmqM1tpGdNWwKLUg6RalzwxyKTjmyOqdT58mDlo4B2IV8+18pGvun65hLPJJVRENUd9OuKOqP6iMFV8nELXW9FKAHE3RtA5clSq2PC0XmP17b+gIpB9q+QHA3USpNkkxi82"
           }
     ]
 }
