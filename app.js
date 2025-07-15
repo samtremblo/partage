@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update browser bar to /type/slug if possible
             if (post.type && post.slug) {
-                const newPath = `/${post.type}/${post.slug}`;
+                const newPath = `/partage/${post.type}/${post.slug}`;
                 window.history.pushState({ type: post.type, slug: post.slug }, '', newPath);
             }
 
