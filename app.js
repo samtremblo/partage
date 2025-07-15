@@ -242,9 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function handlePostClick(post) {
         return () => {
             // Save current URL for restoration
-            const prevUrl = window.location.pathname + window.location.search;
+            // Always restore to /partage/ on close
+            const restoreUrl = '/partage/';
 
-            // Update browser bar to /type/slug if possible
+            // Update browser bar to /partage/type/slug if possible
             if (post.type && post.slug) {
                 const newPath = `/partage/${post.type}/${post.slug}`;
                 window.history.pushState({ type: post.type, slug: post.slug }, '', newPath);
@@ -313,14 +314,14 @@ document.addEventListener('DOMContentLoaded', () => {
             closeBtn.addEventListener('click', () => {
                 document.body.removeChild(overlay);
                 document.body.style.overflow = '';
-                window.history.replaceState({}, '', prevUrl); // Restore previous URL
+                window.history.replaceState({}, '', restoreUrl); // Always restore to /partage/
             });
 
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) {
                     document.body.removeChild(overlay);
                     document.body.style.overflow = '';
-                    window.history.replaceState({}, '', prevUrl); // Restore previous URL
+                    window.history.replaceState({}, '', restoreUrl); // Always restore to /partage/
                 }
             });
         };
