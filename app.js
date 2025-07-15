@@ -51,6 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return params;
     }
 
+    // Utility to extract path from query string for GitHub Pages SPA fallback
+    function getPathFromQuery() {
+        // e.g. ?partage/projects/coeur-de-loups
+        const query = window.location.search.replace(/^\?/, '');
+        // Only treat as path if it looks like a path (contains at least one '/')
+        if (query && query.includes('/')) {
+            return query.split('?')[0].split('/');
+        }
+        return null;
+    }
+
     // Utility to get path info
     function getPathInfo() {
         // Remove leading/trailing slashes and split
@@ -81,9 +92,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const types = getUniqueTypes(data.posts);
             renderTypeMenu(types);
 
-            // Path-based routing
+            // Path-based routing (normal)
             const pathParts = getPathInfo();
-            if (pathParts.length === 2) {
+            // SPA fallback: check if query string contains a path (for GitHub Pages)
+            const spaQueryParts = getPathFromQuery();
+
+            if (spaQueryParts && spaQueryParts.length >= 2) {
+                // e.g. ?partage/projects/coeur-de-loups or ?projects/coeur-de-loups
+                // Try to find the last two parts as type/slug
+                const [type, slug] = spaQueryParts.slice(-2);
+                const postObj = allContent.find(item => item.type === type && item.slug === slug);
+                if (postObj) {
+                    handlePostClick(postObj.originalData)();
+                    filterContent(type);
+                } else {
+                    filterContent('projects');
+                }
+            } else if (pathParts.length === 2) {
                 // /type/slug
                 const [type, slug] = pathParts;
                 const postObj = allContent.find(item => item.type === type && item.slug === slug);
@@ -110,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (params.category) {
                     filterByCategory(params.category);
                 } else {
-                    filterContent('projects'); // Default to projectss
+                    filterContent('projects'); // Default to projects
                 }
             }
         })
