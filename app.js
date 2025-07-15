@@ -241,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handlePostClick(post) {
         return () => {
-            // Save current URL for restoration
             // Always restore to /partage/ on close
             const restoreUrl = '/partage/';
 
@@ -400,4 +399,5 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="preview-text">${previewText}</div>
         `;
     }
+});
 });
