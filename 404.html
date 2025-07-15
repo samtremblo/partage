@@ -8,9 +8,9 @@
       var path = l.pathname.replace(/^\/+/, '');
       // If not root, redirect to index.html with path as query
       if (path && path !== 'index.html') {
-        window.location.replace('/index.html?' + path + l.search + l.hash);
+        window.location.replace('/partage/index.html?' + path + l.search + l.hash);
       } else {
-        window.location.replace('/index.html');
+        window.location.replace('/partage/index.html');
       }
     </script>
     <title>Redirecting...</title>
