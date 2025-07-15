@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="blog, personal, thoughts, web1.0, minimalist">
-    <title>~/partage</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0; url=/" />
     <script>
-        // Configure marked globally
-        marked.setOptions({
-            breaks: true,
-            gfm: true
-        });
+      // For GitHub Pages client-side routing
+      var l = window.location;
+      var path = l.pathname.replace(/^\/+/, '');
+      // If not root, redirect to index.html with path as query
+      if (path && path !== 'index.html') {
+        window.location.replace('/index.html?' + path + l.search + l.hash);
+      } else {
+        window.location.replace('/index.html');
+      }
     </script>
-</head>
-<body>
-    <div id="lang-toggle" style="text-align:right; margin-bottom:10px;">
-        <button data-lang="french" class="lang-btn active">FR</button>
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
+</html>
         <button data-lang="english" class="lang-btn">EN</button>
     </div>
     <h1 data-text="Creative Technologist, Maker, Dev & Dad Jokes expert"></h1>
@@ -27,4 +27,24 @@
     <script src="app.js"></script>
 </body>
 </html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      // For GitHub Pages client-side routing
+      var l = window.location;
+      var path = l.pathname.replace(/^\/+/, '');
+      // If not root, redirect to index.html with path as hash
+      if (path && path !== 'index.html') {
+        window.location.replace('/index.html?' + path + l.search + l.hash);
+      } else {
+        window.location.replace('/index.html');
+      }
+    </script>
+    <title>Redirecting...</title>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
 </html>
