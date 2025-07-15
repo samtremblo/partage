@@ -53,11 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Utility to extract path from query string for GitHub Pages SPA fallback
     function getPathFromQuery() {
-        // e.g. ?partage/projects/coeur-de-loups
+        // e.g. ?/projects/coeur-de-loups or ?projects/coeur-de-loups
         const query = window.location.search.replace(/^\?/, '');
-        // Only treat as path if it looks like a path (contains at least one '/')
-        if (query && query.includes('/')) {
-            return query.split('?')[0].split('/');
+        // Remove leading slash if present
+        const clean = query.startsWith('/') ? query.slice(1) : query;
+        if (clean && clean.includes('/')) {
+            return clean.split('?')[0].split('/');
         }
         return null;
     }
@@ -98,8 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const spaQueryParts = getPathFromQuery();
 
             if (spaQueryParts && spaQueryParts.length >= 2) {
-                // e.g. ?partage/projects/coeur-de-loups or ?projects/coeur-de-loups
-                // Try to find the last two parts as type/slug
+                // e.g. ?projects/coeur-de-loups or ?/projects/coeur-de-loups
                 const [type, slug] = spaQueryParts.slice(-2);
                 const postObj = allContent.find(item => item.type === type && item.slug === slug);
                 if (postObj) {

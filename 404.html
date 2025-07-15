@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=/" />
+    <meta http-equiv="refresh" content="0; url=/partage/" />
     <script>
-      // For GitHub Pages client-side routing
+      // For GitHub Pages client-side routing with /partage root
       var l = window.location;
-      var path = l.pathname.replace(/^\/+/, '');
-      // If not root, redirect to index.html with path as query
+      var path = l.pathname.replace(/^\/+|\/+$/g, '');
+      // Remove the /partage prefix if present
+      if (path.startsWith('partage/')) path = path.slice(8);
+      // If not root, redirect to /partage/index.html with path as query
       if (path && path !== 'index.html') {
-        window.location.replace('/index.html?' + path + l.search + l.hash);
+        window.location.replace('/partage/index.html?' + path + l.search + l.hash);
       } else {
-        window.location.replace('/index.html');
+        window.location.replace('/partage/index.html');
       }
     </script>
     <title>Redirecting...</title>
@@ -19,8 +21,6 @@
     <p>Redirecting...</p>
   </body>
 </html>
-        <button data-lang="english" class="lang-btn">EN</button>
-    </div>
     <h1 data-text="Creative Technologist, Maker, Dev & Dad Jokes expert"></h1>
     <menu id="type-menu"></menu>
     <div id="content-grid"></div>
